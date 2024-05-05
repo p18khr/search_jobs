@@ -17,6 +17,10 @@ export default function SearchJobs() {
   const [jobListings, setJobListings] = useState([]);
   const [filteredJobListings, setFilteredJobListings] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({});
+  const [uniqueRoles, setUniqueRoles] = useState([]);
+  const [uniqueLocation, setUniqueLocation] = useState([]);
+  const [uniqueCompany, setUniqueCompany] = useState([]);
+  
 
   const fetchJobListings = async () => {
     const listings = await fetch(
@@ -33,18 +37,57 @@ export default function SearchJobs() {
 
     setJobListings(json.jdList);
     setFilteredJobListings(json.jdList);
+
+    removeDuplicatesRole();
+    removeDuplicatesLocation();
+    removeDuplicatesCompany();
+  };
+
+  const removeDuplicatesLocation = () => {
+    const uniqueSet = new Set();
+    const uniqueArray = jobListings.filter(obj => {
+      const isDuplicate = uniqueSet.has(obj.location);
+      uniqueSet.add(obj.location);
+      return !isDuplicate;
+    });
+    setUniqueLocation(uniqueArray);
+  };
+
+  const removeDuplicatesCompany = () => {
+    const uniqueSet = new Set();
+    const uniqueArray = jobListings.filter(obj => {
+      const isDuplicate = uniqueSet.has(obj.companyName);
+      uniqueSet.add(obj.companyName);
+      return !isDuplicate;
+    });
+    setUniqueCompany(uniqueArray);
+  };
+
+  const removeDuplicatesRole = () => {
+    const uniqueSet = new Set();
+    const uniqueArray = jobListings.filter(obj => {
+      const isDuplicate = uniqueSet.has(obj.jobRole);
+      uniqueSet.add(obj.jobRole);
+      return !isDuplicate;
+    });
+    setUniqueRoles(uniqueArray);
   };
 
   useEffect(() => {
     // Fetch job listings when component mounts
-
+    
     fetchJobListings();
   }, []);
+
+  
 
   const handleFilterChange = (filters) => {
     setSelectedFilters(filters);
     filterJobListings(filters);
   };
+
+  
+
 
   const filterJobListings = (filters) => {
     const filtered = jobListings.filter((job) => {
@@ -88,9 +131,16 @@ export default function SearchJobs() {
                   id="demo-simple-select"
                   label="Min Experience"
                 >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  <MenuItem value={1}>1</MenuItem>
+                  <MenuItem value={2}>2</MenuItem>
+                  <MenuItem value={3}>3</MenuItem>
+                  <MenuItem value={4}>4</MenuItem>
+                  <MenuItem value={5}>5</MenuItem>
+                  <MenuItem value={6}>6</MenuItem>
+                  <MenuItem value={7}>7</MenuItem>
+                  <MenuItem value={8}>8</MenuItem>
+                  <MenuItem value={9}>9</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
                 </Select>
               </FormControl>
             </Box>
@@ -104,11 +154,12 @@ export default function SearchJobs() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="Age"
+                  label="companyName"
                 >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  {uniqueCompany.map((job) => (
+                    <MenuItem value={job.companyName}>{job.companyName}</MenuItem>
+                  ))}
+
                 </Select>
               </FormControl>
             </Box>
@@ -120,11 +171,11 @@ export default function SearchJobs() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="Age"
+                  label="location"
                 >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  {uniqueLocation.map((job) => (
+                    <MenuItem value={job.location}>{job.location}</MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Box>
@@ -138,11 +189,11 @@ export default function SearchJobs() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="Age"
+                  label="Remote"
                 >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  <MenuItem value={"Remote"}>Remote</MenuItem>
+                  <MenuItem value={"On-Site"}>On-Site</MenuItem>
+                  <MenuItem value={"Hybrid"}>Hybrid</MenuItem>
                 </Select>
               </FormControl>
             </Box>
@@ -156,11 +207,25 @@ export default function SearchJobs() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="Age"
+                  label="TechStack"
                 >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  <MenuItem value={"Python"}>Python</MenuItem>
+                  <MenuItem value={"Java"}>Java</MenuItem>
+                  <MenuItem value={"Golang"}>Golang</MenuItem>
+                  <MenuItem value={"Ruby/Rails"}>Ruby/Rails</MenuItem>
+                  <MenuItem value={"C++"}>C++</MenuItem>
+                  <MenuItem value={"Kotlin"}>Kotlin</MenuItem>
+                  <MenuItem value={"Django"}>Django</MenuItem>
+                  <MenuItem value={"C#"}>C#</MenuItem>
+                  <MenuItem value={"GraphQL"}>GraphQL</MenuItem>
+                  <MenuItem value={"Flask"}>Flask</MenuItem>
+                  <MenuItem value={"TypeScript"}>TypeScript</MenuItem>
+                  <MenuItem value={"AWS"}>AWS</MenuItem>
+                  <MenuItem value={"JavaScript"}>JavaScript</MenuItem>
+                  <MenuItem value={"Rust"}>Rust</MenuItem>
+                  <MenuItem value={"NodeJs"}>NodeJs</MenuItem>
+                  <MenuItem value={"React"}>React</MenuItem>
+                  
                 </Select>
               </FormControl>
             </Box>
@@ -172,11 +237,11 @@ export default function SearchJobs() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="Age"
+                  label="Role"
                 >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  {uniqueRoles.map((job) => (
+                    <MenuItem value={job.jobRole}>{job.jobRole}</MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Box>
@@ -190,11 +255,15 @@ export default function SearchJobs() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="Age"
+                  label="BasePay"
                 >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  <MenuItem value={10}>10L</MenuItem>
+                  <MenuItem value={20}>20L</MenuItem>
+                  <MenuItem value={30}>30L</MenuItem>
+                  <MenuItem value={40}>40L</MenuItem>
+                  <MenuItem value={50}>50L</MenuItem>
+                  <MenuItem value={60}>60L</MenuItem>
+                  <MenuItem value={70}>70L</MenuItem>
                 </Select>
               </FormControl>
             </Box>
@@ -204,7 +273,7 @@ export default function SearchJobs() {
           {jobListings.length > 0 &&
             jobListings.map((job) => (
               <Grid item xs={6} md={4} lg={4}>
-                <Card sx={{ maxWidth: 350, minHeight: 700,maxHeight:700 }}>
+                <Card sx={{ maxWidth: 350, minHeight: 700, maxHeight: 700 }}>
                   <CardContent>
                     <Grid container>
                       <Grid
@@ -313,7 +382,7 @@ export default function SearchJobs() {
                       <br /> {job.minExp}
                     </Typography>
                   </CardContent>
-                  <CardContent sx={{marginTop:'auto'}}>
+                  <CardContent sx={{ marginTop: "auto" }}>
                     <Box width="100%">
                       <Box width="100%">
                         <Button
