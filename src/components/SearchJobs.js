@@ -16,10 +16,18 @@ import "../css/SearchJob.css";
 export default function SearchJobs() {
   const [jobListings, setJobListings] = useState([]);
   const [filteredJobListings, setFilteredJobListings] = useState([]);
-  const [selectedFilters, setSelectedFilters] = useState({});
   const [uniqueRoles, setUniqueRoles] = useState([]);
   const [uniqueLocation, setUniqueLocation] = useState([]);
   const [uniqueCompany, setUniqueCompany] = useState([]);
+  const [filters, setFilters] = useState({
+    minExperience: "",
+    companyName: "",
+    location: "",
+    remoteOnSite: "",
+    techStack: "",
+    role: "",
+    minBasePay: "",
+  });
   
 
   const fetchJobListings = async () => {
@@ -77,43 +85,32 @@ export default function SearchJobs() {
     // Fetch job listings when component mounts
     
     fetchJobListings();
-  }, []);
+  });
 
-  
 
-  const handleFilterChange = (filters) => {
-    setSelectedFilters(filters);
-    filterJobListings(filters);
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+
+    handleSubmit();
   };
 
-  
-
-
-  const filterJobListings = (filters) => {
-    const filtered = jobListings.filter((job) => {
-      return Object.keys(filters).every((key) => {
-        if (!filters[key]) return true; // If filter is not selected, include the job
-        return job[key] === filters[key];
-      });
+  const handleSubmit = () => {
+    const filteredList = jobListings.filter(job => {
+      for (let key in filters) {
+        if (filters[key] && job[key] !== filters[key]) {
+          return false;
+        }
+      }
+      return true;
     });
-    setFilteredJobListings(filtered);
+    console.log(filteredList);
+    setFilteredJobListings(filteredList);
   };
 
-  const Item = styled(Paper)(() => ({
-    backgroundColor: "#98d6a9",
-    padding: 8,
-    textAlign: "center",
-    color: "black",
-  }));
-
-  const bull = (
-    <Box
-      component="span"
-      sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-    >
-      •
-    </Box>
-  );
 
   return (
     <div className="container">
@@ -155,6 +152,7 @@ export default function SearchJobs() {
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   label="companyName"
+                  onChange={handleChange}
                 >
                   {uniqueCompany.map((job) => (
                     <MenuItem value={job.companyName}>{job.companyName}</MenuItem>
@@ -172,6 +170,7 @@ export default function SearchJobs() {
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   label="location"
+                  onChange={handleChange}
                 >
                   {uniqueLocation.map((job) => (
                     <MenuItem value={job.location}>{job.location}</MenuItem>
@@ -189,7 +188,9 @@ export default function SearchJobs() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="Remote"
+                  label="Remote/on-site"
+                  onChange={handleChange}
+
                 >
                   <MenuItem value={"Remote"}>Remote</MenuItem>
                   <MenuItem value={"On-Site"}>On-Site</MenuItem>
@@ -208,6 +209,7 @@ export default function SearchJobs() {
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   label="TechStack"
+                  onChange={handleChange}
                 >
                   <MenuItem value={"Python"}>Python</MenuItem>
                   <MenuItem value={"Java"}>Java</MenuItem>
@@ -238,6 +240,7 @@ export default function SearchJobs() {
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   label="Role"
+                  onChange={handleChange}
                 >
                   {uniqueRoles.map((job) => (
                     <MenuItem value={job.jobRole}>{job.jobRole}</MenuItem>
@@ -255,7 +258,8 @@ export default function SearchJobs() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="BasePay"
+                  label="MinBasePay"
+                  onChange={handleChange}
                 >
                   <MenuItem value={10}>10L</MenuItem>
                   <MenuItem value={20}>20L</MenuItem>
@@ -270,8 +274,8 @@ export default function SearchJobs() {
           </Grid>
         </Grid>
         <Grid container spacing={3} padding="10px">
-          {jobListings.length > 0 &&
-            jobListings.map((job) => (
+          {filteredJobListings.length > 0 &&
+            filteredJobListings.map((job) => (
               <Grid item xs={6} md={4} lg={4}>
                 <Card sx={{ maxWidth: 350, minHeight: 700, maxHeight: 700 }}>
                   <CardContent>
