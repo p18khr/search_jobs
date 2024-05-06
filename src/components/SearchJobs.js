@@ -112,6 +112,19 @@ export default function SearchJobs() {
     setFilteredJobListings(filteredList);
   };
 
+  const handleRemote =()=>{
+    const filtered = jobListings.filter((job) => {
+      if (remoteOnSite === "remote" && job.location === "remote") {
+        return true; // Show all job listings if no filter is selected
+      } else if (remoteOnSite === "onsite" && job.location !== "remote") {
+        return true;
+      } else {
+       return false;
+      }
+    });
+    setFilteredJobListings(filtered);
+  }
+
 
   useEffect(() => {
     // Fetch job listings when component mounts
@@ -123,7 +136,12 @@ export default function SearchJobs() {
       handleSubmit();
       setShouldFilter(false); // Reset the flag after filtering
     }
-  }, [filters,remoteOnSite]);
+  }, [filters]);
+
+  useEffect(() => {
+    handleRemote();
+  }, [remoteOnSite]);
+
 
   useEffect(() => {
     removeDuplicatesCompany();
@@ -207,13 +225,13 @@ export default function SearchJobs() {
                 <Select
                   name="remoteOnSite"
                   label="remoteOnSite"
-                  onChange={(e)=>{setRemoteOnSite(e.target.value); handleSubmit();}}
+                  onChange={(e)=>{setRemoteOnSite(e.target.value);}}
                   value={remoteOnSite}
                 >
                   <MenuItem value="remote" key="remote">
                     Remote
                   </MenuItem>
-                  <MenuItem value="On-Site" key="onsite ">
+                  <MenuItem value="onsite" key="onsite ">
                     On-Site
                   </MenuItem>
                   {/* <MenuItem value={"Hybrid"} key="hybrid">
